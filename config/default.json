@@ -1,0 +1,9 @@
+{
+    "zuzis": {
+        "db": "mongodb://localhost:27017/dev",
+	"es":{
+		 "host": "localhost",
+		 "port": "9200"
+    }
+    }
+}
