@@ -3,6 +3,7 @@ var gameSocket;
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Board = mongoose.model('Board');
+var graph = require('fbgraph');
 
 
 /**
@@ -26,6 +27,7 @@ exports.initGame = function (sio, socket) {
     gameSocket.on('playerJoinGame', playerJoinGame);
     gameSocket.on('playerAnswer', playerAnswer);
     gameSocket.on('playerRestart', playerRestart);
+    gameSocket.on('playerLog',playerLogin);
 }
 
 /* *******************************
@@ -40,7 +42,7 @@ exports.initGame = function (sio, socket) {
 function hostCreateNewGame() {
     // Create a unique Socket.IO Room
             //var username = this.request.session.passport.user;
-console.log(this.request);
+console.log(this.client.user );
     var thisGameId = (Math.random() * 100000) | 0;
 //      var g1 = new Board({
 //        user: fooId,
@@ -173,6 +175,39 @@ function playerRestart(data) {
     data.playerId = this.id;
     io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
 }
+
+
+
+function playerLogin(data){
+    console.log(data);
+    
+    var userID= data.userID;
+    var accessToken= data.accessToken;
+    
+
+          User.findOne({facebookid: userID}, function (err, user) {
+
+            if (err) {
+                            this.emit('error', {message: "User does not exist."});
+
+            }
+
+            if (user === null) {
+                graph.setAccessToken(accessToken);
+                graph.get(userID, function (err, res) {
+                    var u = new User({facebookid: userID, name: res.name, accesstoken: accessToken, lastConnection: 'Sun Nov 02 2014 11:16:56 GMT+0100 (CET)'});
+                    u.save(function (err) {});
+                    return done(null, u);
+                });
+
+            } else {
+
+                this.emit('error', {message: "User does not exist."});
+            }
+        });
+    
+}
+
 
 /* *************************
  *                       *

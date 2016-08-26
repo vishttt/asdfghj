@@ -7,14 +7,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var passport = require('passport');
 var flash = require('connect-flash');
-var sessionStore     = require('awesomeSessionStore'); // find a working session store (have a look at the readme)
-var    passportSocketIo = require("passport.socketio");
+
 
 var env = process.env.NODE_ENV || 'default';
 var config = require('config');
-
 var app = express();
 require('./config/database')(app, mongoose);
 
@@ -22,28 +19,27 @@ require('./config/database')(app, mongoose);
 
 // bootstrap data models
 fs.readdirSync(__dirname + '/models').forEach(function (file) {
-    if (~file.indexOf('.js')) require(__dirname + '/models/' + file);
+    if (~file.indexOf('.js'))
+        require(__dirname + '/models/' + file);
 });
 
 
 
 // Import the Anagrammatix game file.
+
 var agx = require('./agxgame');
+var User = mongoose.model('User');
+var Board = mongoose.model('Board');
+var graph = require('fbgraph');
+
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser('S3CRE7'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser());
 app.use(flash());
-app.use(session({ secret: 'S3CRE7-S3SSI0N', saveUninitialized: true, resave: true } ));
+app.use(session({key: 'express.sid', secret: 'S3CRE7-S3SSI0N', saveUninitialized: true, resave: true}));
 app.use(express.static(path.join(__dirname, 'public')));
-require('./config/passport')(app, passport);
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-var login = require('./routes/login');
-app.use('/login', login);
 
 require('./config/errorHandlers.js')(app);
 
@@ -51,60 +47,57 @@ require('./config/errorHandlers.js')(app);
 
 // Create a Node.js based http server on port 8080
 var server = require('http').createServer(app).listen(3000);
-
-// Create a Socket.IO server and attach it to the http server
 var io = require('socket.io').listen(server);
-io.set('authorization', passportSocketIo.authorize({
-  cookieParser: express.cookieParser,
-  key:         'express.sid',       // the name of the cookie where express/connect stores its session_id
-  secret:      'session_secret',    // the session_secret to parse the cookie
-  store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
-  success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
-  fail:        onAuthorizeFail,     // *optional* callback on fail/error - read more below
-}));
+require('socketio-auth')(io, {
+    authenticate: authenticate,
+    postAuthenticate: postAuthenticate,
+    timeout: 1000
+});
 
-//With Socket.io >= 1.0
-io.use(passportSocketIo.authorize({
-  cookieParser: cookieParser,       // the same middleware you registrer in express
-  key:          'express.sid',       // the name of the cookie where express/connect stores its session_id
-  secret:       'session_secret',    // the session_secret to parse the cookie
-  store:        sessionStore,        // we NEED to use a sessionstore. no memorystore please
-  success:      onAuthorizeSuccess,  // *optional* callback on success - read more below
-  fail:         onAuthorizeFail,     // *optional* callback on fail/error - read more below
-}));
+function authenticate(socket, data, callback) {
+   
+    var userID = data.userID;
+    var accessToken = data.accessToken;
 
-function onAuthorizeSuccess(data, accept){
-  console.log('successful connection to socket.io');
 
-  // The accept-callback still allows us to decide whether to
-  // accept the connection or not.
-  accept(null, true);
+    User.findOne({facebookid: userID}, function (err, user) {
 
-  // OR
+        if (err) {
+            return callback(new Error("User not found"));
 
-  // If you use socket.io@1.X the callback looks different
-  accept();
+        }
+
+        if (user === null) {
+            graph.setAccessToken(accessToken);
+            graph.get(userID, function (err, res) {
+                var u = new User({facebookid: userID, name: res.name, accesstoken: accessToken, lastConnection: 'Sun Nov 02 2014 11:16:56 GMT+0100 (CET)'});
+                u.save(function (err) {
+                });
+                return callback(null, true);
+            });
+
+        } else {
+
+            return callback(null, true);
+        }
+    });
+
 }
 
-function onAuthorizeFail(data, message, error, accept){
-  if(error)
-    throw new Error(message);
-  console.log('failed connection to socket.io:', message);
 
-  // We use this callback to log all of our failed connections.
-  accept(null, false);
+function postAuthenticate(socket, data) {
+    console.log("post Authen");
+    var userID = data.userID;
+    var accessToken = data.accessToken;
+    User.findOne({facebookid: userID}, function (err, user) {
+        socket.client.user = user;
 
-  // OR
+    });
 
-  // If you use socket.io@1.X the callback looks different
-  // If you don't want to accept the connection
-  if(error)
-    accept(new Error(message));
-  // this error will be sent to the user as a special error-package
-  // see: http://socket.io/docs/client-api/#socket > error-object
 }
-// Reduce the logging output of Socket.IO
-io.set('log level',1);
+
+
+io.set('log level', 1);
 
 // Listen for Socket.IO Connections. Once connected, start the game logic.
 io.sockets.on('connection', function (socket) {
