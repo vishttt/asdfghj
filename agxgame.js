@@ -64,7 +64,7 @@ function hostCreateNewGame() {
 
             board.user2 = user.id;
             board.status = 2;
-            g1.save(function (err) {
+            board.save(function (err) {
             });
 
             // Join the room
