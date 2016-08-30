@@ -27,7 +27,7 @@ exports.initGame = function (sio, socket) {
     gameSocket.on('playerJoinGame', playerJoinGame);
     gameSocket.on('playerAnswer', playerAnswer);
     gameSocket.on('playerRestart', playerRestart);
-    gameSocket.on('playerLog',playerLogin);
+    gameSocket.on('playerLog', playerLogin);
 }
 
 /* *******************************
@@ -40,28 +40,45 @@ exports.initGame = function (sio, socket) {
  * The 'START' button was clicked and 'hostCreateNewGame' event occurred.
  */
 function hostCreateNewGame() {
-    // Create a unique Socket.IO Room
-            //var username = this.request.session.passport.user;
-console.log(this.client.user );
-    var thisGameId = (Math.random() * 100000) | 0;
-//      var g1 = new Board({
-//        user: fooId,
-//        white: "Foo",
-//        black: "Anonymous",
-//        pgn: "1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. O-O Bc5 5. c3 O-O 6. d4 exd4 7. cxd4 Bb4",
-//        result: "1-0"});
-//
-//
-//    g1.save(function(err) {});
 
-    // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
-    this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
+    console.log(this.client.user.id);
+    var user = this.client.user;
+    var sock = this;
+    Board.findOne({status: 1}, function (err, board) {
+
+        if (err || !board) {
+
+            var g1 = new Board({
+                user1: user.id,
+                status: 1
+            });
+            g1.save(function (err) {
+            });
+            var thisGameId = g1.id;
+
+            // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
+            sock.emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
+            // Join the Room and wait for the players
+            sock.join(thisGameId.toString());
+        } else {
+
+            board.user2 = user.id;
+            board.status = 2;
+            g1.save(function (err) {
+            });
+
+            // Join the room
+            sock.join(board.id);
+            //console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
+
+            // Emit an event notifying the clients that the player has joined the room.
+            io.sockets.in(board.id).emit('playerJoinedRoom');
+        }
+    });
+
+    console.log(this.client.user);
 
 
-
-
-    // Join the Room and wait for the players
-    this.join(thisGameId.toString());
 }
 ;
 
@@ -148,7 +165,7 @@ function playerJoinGame(data) {
             }
         }
     });
- 
+
 
 }
 
@@ -178,34 +195,35 @@ function playerRestart(data) {
 
 
 
-function playerLogin(data){
+function playerLogin(data) {
     console.log(data);
-    
-    var userID= data.userID;
-    var accessToken= data.accessToken;
-    
 
-          User.findOne({facebookid: userID}, function (err, user) {
+    var userID = data.userID;
+    var accessToken = data.accessToken;
 
-            if (err) {
-                            this.emit('error', {message: "User does not exist."});
 
-            }
+    User.findOne({facebookid: userID}, function (err, user) {
 
-            if (user === null) {
-                graph.setAccessToken(accessToken);
-                graph.get(userID, function (err, res) {
-                    var u = new User({facebookid: userID, name: res.name, accesstoken: accessToken, lastConnection: 'Sun Nov 02 2014 11:16:56 GMT+0100 (CET)'});
-                    u.save(function (err) {});
-                    return done(null, u);
+        if (err) {
+            this.emit('error', {message: "User does not exist."});
+
+        }
+
+        if (user === null) {
+            graph.setAccessToken(accessToken);
+            graph.get(userID, function (err, res) {
+                var u = new User({facebookid: userID, name: res.name, accesstoken: accessToken, lastConnection: 'Sun Nov 02 2014 11:16:56 GMT+0100 (CET)'});
+                u.save(function (err) {
                 });
+                return done(null, u);
+            });
 
-            } else {
+        } else {
 
-                this.emit('error', {message: "User does not exist."});
-            }
-        });
-    
+            this.emit('error', {message: "User does not exist."});
+        }
+    });
+
 }
 
 
