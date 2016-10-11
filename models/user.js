@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var util = require('../config/util.js');
+var random = require('mongoose-simple-random');
 
 var UserSchema = mongoose.Schema({
     name: String,
@@ -15,6 +16,8 @@ var UserSchema = mongoose.Schema({
     createdAt: {type: Date, default: Date.now},
     lastConnection: {type: Date, default: Date.now}
 });
+UserSchema.plugin(random);
+
 UserSchema.methods = {
 
     authenticate: function (plainText) {

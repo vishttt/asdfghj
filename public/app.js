@@ -42,6 +42,8 @@ var IO = {
      * @param data {{playerName: string, gameId: int, mySocketId: int}}
      */
     playerJoinedRoom: function (data) {
+        
+        console.log(App);
         // When a player joins a room, do the updateWaitingScreen funciton.
         // There are two versions of this function: one for the 'host' and
         // another for the 'player'.

@@ -8,6 +8,7 @@ var BoardSchema = mongoose.Schema({
     winner: {type: Schema.ObjectId, ref: 'User'},
     lost: {type: Schema.ObjectId, ref: 'User'},
     createdAt: {type: Date, default: Date.now},
+        challengecurrent:{type:Schema.ObjectId, ref:'Challenge'},
     result: String
 });
 
