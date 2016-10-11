@@ -38,6 +38,7 @@ button.image.store { background: url('../images/button_store.png') center left n
 button.image.close { background: url('../images/button_close.png') center left no-repeat; background-size: contain; }
 button.image.brag { background: url('../images/button_brag.png') center left no-repeat; background-size: contain; }
 button.image.share_action { background: url('../images/button_share_action.png') center left no-repeat; background-size: contain; }
+button.image.cancel { background: url('../images/button_close.png') center left no-repeat; background-size: contain; }
 
 #gameover { text-align: center; }
 #gameover .profile { display: block; width: 118px; height: 118px; border: 1px solid #f1dfcc; margin: 20px auto; }
@@ -59,9 +60,15 @@ section canvas { width: 960px; height: 580px; }
 
 #gamestats { height: 0;  background: rgba(0,0,0,0.5); }
 
-#gamestats .message { position: absolute; top: 0; left: 0; }
-#gamestats .message img { left: 5px; top: 5px; width: 50px; height: 50px; position: absolute; }
-#gamestats .message p { line-height: 50px; top: 5px; left: 60px; position: absolute; white-space: nowrap; }
+#gamestats .blueteam { position: absolute; top: 0; left: 0; }
+#gamestats .blueteam img { left: 5px; top: 5px; width: 50px; height: 50px; position: absolute; }
+#gamestats .blueteam p { line-height: 50px; top: 5px; left: 60px; position: absolute; white-space: nowrap; }
+
+#gamestats .redteam { position: absolute; top: 0; left: 0; }
+#gamestats .redteam img { right: 5px; top: 5px; width: 50px; height: 50px; position: absolute; }
+#gamestats .redteam p { text-align: right; position: absolute; top: 5px; line-height: 50px; right: 5px; white-space: nowrap; }
+
+
 
 #gamestats .score { position: absolute; top: 0; right: 0; }
 #gamestats .score p { text-align: right; position: absolute; top: 5px; line-height: 50px; right: 5px; white-space: nowrap; }

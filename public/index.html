@@ -1,205 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8"/>
+    <head>
+        <meta charset="utf-8"/>
 
-    <!-- Ensure that everything scales appropriately on a mobile device -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <!-- Ensure that everything scales appropriately on a mobile device -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <!-- Let's borrow a cool looking Font from Google -->
-    <link href='https://fonts.googleapis.com/css?family=Quicksand:300,400,700' rel='stylesheet' type='text/css'>
+        <!-- Let's borrow a cool looking Font from Google -->
+        <link href='https://fonts.googleapis.com/css?family=Quicksand:300,400,700' rel='stylesheet' type='text/css'>
 
-    <link href="css/style.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
         <link href="css/reset.css" rel="stylesheet">
 
-    
-    
 
-</head>
 
-<body>
 
-    
-      <div id="fb-root"></div>
+    </head>
 
-    <!-- Share header -->
-    <header>
-      <div class="container">
-        <img class="logo" src="images/logo.png" />
-        <button class="image share"></button>
-      </div>
-    </header>
+    <body>
 
-    <section id="home">
-      <div id="menuleft" class="panel left hidden">
 
-        <!-- Welcome screen -->
-        <div id="welcome">
-          <h1>Welcome <span class="first_name">...</span></h1>
-          <img class="profile" src="images/profile.png" />
-          <ul class="stats">
-            <li><img src="images/coin40.png" alt="Coins" /> <span class="me coins">...</span></li>
-            <li><img class="buybomb" src="images/buybomb40.png" alt="Bombs" /> <span class="me bombs">...</span></li>
+        <div id="fb-root"></div>
+
+        <!-- Share header -->
+        <header>
+            <div class="container">
+                <img class="logo" src="images/logo.png" />
+                <button class="image share"></button>
+            </div>
+        </header>
+        <div id="gameArea">
+            <!-- This is where the templates defined below will be used -->
+        </div>
+
+
+        <!-- Main Title Screen that appears when the page loads for the first time -->
+        <script id="intro-screen-template" type="text/template">
+  <section id="home">
+            <div id="menuleft" class="panel left hidden">
+
+                <!-- Welcome screen -->
+                <div id="welcome">
+                    <h1>Welcome <span class="first_name">...</span></h1>
+                    <img class="profile" src="images/profile.png" />
+                    <ul class="stats">
+                        <li><img src="images/coin40.png" alt="Coins" /> <span class="me coins">...</span></li>
+                        <li><img class="buybomb" src="images/buybomb40.png" alt="Bombs" /> <span class="me bombs">...</span></li>
+                    </ul>
+                </div>
+
+                <!-- Menu -->
+                <div id="menu">
+                    <button class="image play"></button>
+                    <button class="image challenge"></button>
+                    <button class="image leaderboard"></button>
+                    <button class="image store"></button>
+                </div>
+            </div>
+            <div id="loginbutton"  class="panel left hidden">
+                <button class="image Login" id="login">Login</button>
+            </div>
+ <div class="panel right hidden friends" id="friendselector">
+        <div class="nofriends">
+          <p>Friend Smash! is better with friends! Click here to see a list of friends to challenge.</p>
+          <button class"friendPermissions">Grant user_friends</button>
+        </div>
+        <div class="friends">
+          <h1>Challenge friends</h1>
+          <div class="tabs">
+            <button class="friends">Request</button>
+            <button class="invitable_friends">Invite</button>
+          </div>
+          <ul class="scrollable_list friendselector friends">
+            <li class="loading">Loading...</li>
+            <li class="template">
+              <img src="images/profile.png" class="profile small" />
+              <span class="name">...</span>
+            </li>
           </ul>
-        </div>
-
-        <!-- Menu -->
-        <div id="menu">
-          <button class="image play"></button>
-          <button class="image challenge"></button>
-          <button class="image leaderboard"></button>
-          <button class="image store"></button>
+          <ul class="scrollable_list friendselector invitable_friends">
+            <li class="loading">Loading...</li>
+            <li class="template">
+              <img src="images/profile.png" class="profile small" />
+              <span class="name">...</span>
+            </li>
+          </ul>
+          <div class="buttons">
+            <button class="image challenge send" disabled="disabled"></button>
+          </div>
         </div>
       </div>
-<div id="loginbutton"  class="panel left hidden">
- <button class="image Login" id="login">Login</button>
-</div>
 
 
 
+        </section>
+
+        </script>
+        <script id="game-template" type="text/template">
+
+           <section id="stage" class="hidden">
+         <div id="gameboard">
+          <div id="pic">
+                <img id="poster" src="">
+                <img id="loader" class="show" src="img/loading.gif" />
+            </div>
+            <div id="letters">
+                <ul id="letters_list">
+                </ul>
+                <div id="success" class="hide">Great! Press next for another movie.</div>
+                <div id="error" class="hide">Error, please reload the page to keep playing!</div>
+            </div>
+                <div id="result">
+                    <ul id="result_list">
+                    </ul>
+                </div>
+         </div>
+         <div id="gamestats">
+           <div class="blueteam">
+             <img class="profile" src="images/profile.png" />
+             <p>Smash <span class="name">...</span></p>
+           </div>
+           <div class="redteam">
+                        <img class="profile" src="images/profile.png" />
+             <p>Score <span class="score_value">...</span></p>
+           </div>
+           <div class="bombs"></div>
+           <div class="lives"></div>
+         </div>
+       </section>
+        </script>
+
+        <!-- This screen appears when a user clicks "CREATE" on the Title Screen -->
+        <script id="create-game-template" type="text/template">
+    <section id="gameover"  >
+      <h1>Searching for Opponent...</h1>
+      <img src="images/profile.png" class="profile" />
+    
+     
+      <div class="share_composer">
+        <div class="buttons">
+          <button class="image cancel"></button>
+        </div>
+      </div>
     </section>
+      
+        </script>
 
-    <div id="gameArea">
-        <!-- This is where the templates defined below will be used -->
-    </div>
-
-    <!-- Main Title Screen that appears when the page loads for the first time -->
-    <script id="intro-screen-template" type="text/template">
-
-        <div class="titleWrapper">
-
-            <div class="title">
-                ANAGRAMMATIX
-            </div>
-
-            <div class="buttons">
-
-                <button id="btnCreateGame" class="btn left">CREATE</button>
-                <button id="btnJoinGame" class="btn right">JOIN</button>
-                <div style="clear:both"></div>
-            </div>
-
-        </div>
-
-    </script>
-
-    <!-- This screen appears when a user clicks "CREATE" on the Title Screen -->
-    <script id="create-game-template" type="text/template">
-        <div class="createGameWrapper">
-
-            <div class="info">Open this site on your mobile device:</div>
-            <div id="gameURL" class="infoBig">Error!</div>
-
-            <div class="info">Then click <strong>JOIN</strong> and <br/> enter the following Game ID:</div>
-            <div id="spanNewGameCode" class="gameId">Error!</div>
-
-            <div id="playersWaiting"></div>
-        </div>
-    </script>
-
-    <!-- This scrreen appears when a player clicks "JOIN" on the Title Screen -->
-    <script id="join-game-template" type="text/template">
-        <div class="joinGameWrapper">
+        <!-- This scrreen appears when a player clicks "JOIN" on the Title Screen -->
+        <script id="join-game-template" type="text/template">
+            <div class="joinGameWrapper">
             <div class="info">
-                <label for="inputPlayerName">Your Name:</label>
-                <input id="inputPlayerName" type="text" />
+            <label for="inputPlayerName">Your Name:</label>
+            <input id="inputPlayerName" type="text" />
             </div>
 
             <div class="info">
-                <label for="inputGameId">Game ID:</label>
-                <input id="inputGameId" type="text"/>
+            <label for="inputGameId">Game ID:</label>
+            <input id="inputGameId" type="text"/>
             </div>
 
             <div class="info buttons">
-                <button id="btnStart" class="btn">Start</button>
-                <div id="playerWaitingMessage"></div>
+            <button id="btnStart" class="btn">Start</button>
+            <div id="playerWaitingMessage"></div>
             </div>
-        </div>
-    </script>
+            </div>
+        </script>
 
-    <!-- This is the 'Host' screen. It displays the word for each player to match -->
-    <script id="host-game-template" type="text/template">
-        <div id="wordArea">
+        <!-- This is the 'Host' screen. It displays the word for each player to match -->
+        <script id="host-game-template" type="text/template">
+            <div id="wordArea">
             <div id="hostWord">5</div>
-      <div id="container">
-    <div id="menu">
-      <span id="app"></span>
-      <span id="stage"></span>
-      <span id="points"></span>
-      <span id="movs"></span>
-    </div>
-    <div id="controls">
-      <span id="next" class="hide">Next</span>
-    </div>
-    <div id="pic">
-      <img id="poster" src="">
-      <img id="loader" class="show" src="img/loading.gif" />
-    </div>
-    <div id="letters">
-      <ul id="letters_list">
-      </ul>
-      <div id="success" class="hide">Great! Press next for another movie.</div>
-      <div id="error" class="hide">Error, please reload the page to keep playing!</div>
-    </div>
-    <div id="result">
-      <ul id="result_list">
-      </ul>
-    </div>
-  </div>
-    
-    
-        </div>
-        <div id="playerScores">
+            <div id="container">
+            <div id="menu">
+            <span id="app"></span>
+            <span id="stage"></span>
+            <span id="points"></span>
+            <span id="movs"></span>
+            </div>
+            <div id="controls">
+            <span id="next" class="hide">Next</span>
+            </div>
+            <div id="pic">
+            <img id="poster" src="">
+            <img id="loader" class="show" src="img/loading.gif" />
+            </div>
+            <div id="letters">
+            <ul id="letters_list">
+            </ul>
+            <div id="success" class="hide">Great! Press next for another movie.</div>
+            <div id="error" class="hide">Error, please reload the page to keep playing!</div>
+            </div>
+            <div id="result">
+            <ul id="result_list">
+            </ul>
+            </div>
+            </div>
+
+
+            </div>
+            <div id="playerScores">
             <div id="player1Score" class="playerScore">
-                <span class="score">0</span><span class="playerName">Player 1</span>
+            <span class="score">0</span><span class="playerName">Player 1</span>
             </div>
             <div id="player2Score" class="playerScore">
-                <span class="playerName">Player 2</span><span class="score">0</span>
+            <span class="playerName">Player 2</span><span class="score">0</span>
             </div>
-        </div>
-    </script>
+            </div>
+        </script>
 
-    <!-- JavaScript Libraries -->
+        <!-- JavaScript Libraries -->
 
-    <!-- jQuery! -->
-    <script src="libs/jquery-2.0.2.min.js"></script>
+        <!-- jQuery! -->
+        <script src="libs/jquery-2.0.2.min.js"></script>
 
-    <!-- TextFit resizes text to fill a container.
-        It's used so the titles and game words fit properly on any size screen.
-        https://github.com/STRML/textFit   -->
-    <script src="libs/textFit.min.js"></script>
+        <!-- TextFit resizes text to fill a container.
+            It's used so the titles and game words fit properly on any size screen.
+            https://github.com/STRML/textFit   -->
+        <script src="libs/textFit.min.js"></script>
 
-    <!-- FastClick is used to eliminate the 300ms delay when clicking items on a mobile device
-        https://github.com/ftlabs/fastclick -->
-    <script src="libs/fastclick.js"></script>
-     <!-- Facebook SDK for Javascript -->
-    <script src="//connect.facebook.net/en_US/sdk.js"></script>
+        <!-- FastClick is used to eliminate the 300ms delay when clicking items on a mobile device
+            https://github.com/ftlabs/fastclick -->
+        <script src="libs/fastclick.js"></script>
+        <!-- Facebook SDK for Javascript -->
+        <script src="//connect.facebook.net/en_US/sdk.js"></script>
 
-    <!-- Parse -->
-    <script src=" https://npmcdn.com/parse/dist/parse.min.js"></script>
-    <script src="libs/integration/persistence.js"></script>
+        <!-- Parse -->
+        <script src=" https://npmcdn.com/parse/dist/parse.min.js"></script>
+        <script src="libs/integration/persistence.js"></script>
 
-    <!-- Init and Login -->
-    <script src="libs/integration/core.js"></script>
-    <script src="libs/integration/login.js"></script>
+        <!-- Init and Login -->
+        <script src="libs/integration/core.js"></script>
+        <script src="libs/integration/login.js"></script>
 
-    <!-- Requests, Sharing and Graph API -->
-    <script src="libs/integration/requests.js"></script>
-    <script src="libs/integration/sharing.js"></script>
+        <!-- Requests, Sharing and Graph API -->
+        <script src="libs/integration/requests.js"></script>
+        <script src="libs/integration/sharing.js"></script>
 
-    <!-- App Events and Payments -->
+        <!-- App Events and Payments -->
         <script src="libs/moment.js"></script>
 
-    <script src="libs/integration/app_events.js"></script>
-    <script src="libs/integration/payments.js"></script>
-    <!-- If Socket.IO is used with Express, then the /socket.io/ path will
-        serve the proper Socket.IO javascript files used by the browser -->
-    <script src="/socket.io/socket.io.js"></script>
+        <script src="libs/integration/app_events.js"></script>
+        <script src="libs/integration/payments.js"></script>
+        <!-- If Socket.IO is used with Express, then the /socket.io/ path will
+            serve the proper Socket.IO javascript files used by the browser -->
+        <script src="/socket.io/socket.io.js"></script>
 
-    <!-- app.js is where all the client-side Anagrammatix game logic -->
-    <script src="app.js"></script>
+        <!-- app.js is where all the client-side Anagrammatix game logic -->
+        <script src="app.js"></script>
         <script src="libs/ui.js"></script>
 
 
-</body>
+    </body>
 </html>

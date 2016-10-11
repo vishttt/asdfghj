@@ -91,8 +91,10 @@ function postAuthenticate(socket, data) {
     var accessToken = data.accessToken;
     User.findOne({facebookid: userID}, function (err, user) {
         socket.client.user = user;
-
+        socket.emit('updateUserInfo', user);
     });
+   
+
 
 }
 

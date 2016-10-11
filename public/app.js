@@ -20,6 +20,8 @@ var IO = {
         IO.socket.on('newWordData', IO.onNewWordData);
         IO.socket.on('hostCheckAnswer', IO.hostCheckAnswer);
         IO.socket.on('gameOver', IO.gameOver);
+        IO.socket.on('updateUserInfo', IO.updateUserInfo);
+
         IO.socket.on('error', IO.error);
     },
     /**
@@ -30,6 +32,16 @@ var IO = {
         App.mySocketId = IO.socket.id;
         // console.log(data.message);
     },
+    updateUserInfo:function(data){
+        console.log("logined");
+        App.currentUser=data;
+        updateInfo();
+        
+        
+    },
+    
+    
+    
     /**
      * A new game has been created and a random game ID has been generated.
      * @param data {{ gameId: int, mySocketId: * }}
@@ -119,6 +131,7 @@ var App = {
      * to the array of word data stored on the server.
      */
     currentRound: 0,
+    currentUser:[],
     current_title: [],
     shuffled_title: [],
     /* *************************************
